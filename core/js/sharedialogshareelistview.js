@@ -35,36 +35,42 @@
 			'{{/unless}} {{/if}}' +
 			'{{#if isResharingAllowed}} {{#if sharePermissionPossible}}' +
 			'<span class="shareOption">' +
-			'<input id="canShare-{{cid}}-{{shareWith}}" type="checkbox" name="share" class="permissions checkbox" {{#if hasSharePermission}}checked="checked"{{/if}} data-permissions="{{sharePermission}}" />' +
-			'<label for="canShare-{{cid}}-{{shareWith}}">{{canShareLabel}}</label>' +
+			'<input id="can-share-{{cid}}-{{shareWith}}" type="checkbox" name="share" class="permissions checkbox" {{#if hasSharePermission}}checked="checked"{{/if}} data-permissions="{{sharePermission}}" />' +
+			'<label for="can-share-{{cid}}-{{shareWith}}">{{canShareLabel}}</label>' +
 			'</span>' +
 			'{{/if}} {{/if}}' +
 			'{{#if editPermissionPossible}}' +
 			'<span class="shareOption">' +
-			'<input id="canEdit-{{cid}}-{{shareWith}}" type="checkbox" name="edit" class="permissions checkbox" {{#if hasEditPermission}}checked="checked"{{/if}} />' +
-			'<label for="canEdit-{{cid}}-{{shareWith}}">{{canEditLabel}}</label>' +
+			'<input id="can-edit-{{cid}}-{{shareWith}}" type="checkbox" name="edit" class="permissions checkbox" {{#if hasEditPermission}}checked="checked"{{/if}} />' +
+			'<label for="can-edit-{{cid}}-{{shareWith}}">{{canEditLabel}}</label>' +
 			'<a href="#" class="showCruds"><img alt="{{crudsLabel}}" src="{{triangleSImage}}"/></a>' +
 			'</span>' +
 			'{{/if}}' +
 			'<div class="cruds hidden">' +
 			'{{#if createPermissionPossible}}' +
 			'<span class="shareOption">' +
-			'<input id="canCreate-{{cid}}-{{shareWith}}" type="checkbox" name="create" class="permissions checkbox" {{#if hasCreatePermission}}checked="checked"{{/if}} data-permissions="{{createPermission}}"/>' +
-			'<label for="canCreate-{{cid}}-{{shareWith}}">{{createPermissionLabel}}</label>' +
+			'<input id="can-create-{{cid}}-{{shareWith}}" type="checkbox" name="create" class="permissions checkbox" {{#if hasCreatePermission}}checked="checked"{{/if}} data-permissions="{{createPermission}}"/>' +
+			'<label for="can-create-{{cid}}-{{shareWith}}">{{createPermissionLabel}}</label>' +
 			'</span>' +
 			'{{/if}}' +
 			'{{#if updatePermissionPossible}}' +
 			'<span class="shareOption">' +
-			'<input id="canUpdate-{{cid}}-{{shareWith}}" type="checkbox" name="update" class="permissions checkbox" {{#if hasUpdatePermission}}checked="checked"{{/if}} data-permissions="{{updatePermission}}"/>' +
-			'<label for="canUpdate-{{cid}}-{{shareWith}}">{{updatePermissionLabel}}</label>' +
+			'<input id="can-update-{{cid}}-{{shareWith}}" type="checkbox" name="update" class="permissions checkbox" {{#if hasUpdatePermission}}checked="checked"{{/if}} data-permissions="{{updatePermission}}"/>' +
+			'<label for="can-update-{{cid}}-{{shareWith}}">{{updatePermissionLabel}}</label>' +
 			'</span>' +
 			'{{/if}}' +
 			'{{#if deletePermissionPossible}}' +
 			'<span class="shareOption">' +
-			'<input id="canDelete-{{cid}}-{{shareWith}}" type="checkbox" name="delete" class="permissions checkbox" {{#if hasDeletePermission}}checked="checked"{{/if}} data-permissions="{{deletePermission}}"/>' +
-			'<label for="canDelete-{{cid}}-{{shareWith}}">{{deletePermissionLabel}}</label>' +
+			'<input id="can-delete-{{cid}}-{{shareWith}}" type="checkbox" name="delete" class="permissions checkbox" {{#if hasDeletePermission}}checked="checked"{{/if}} data-permissions="{{deletePermission}}"/>' +
+			'<label for="can-delete-{{cid}}-{{shareWith}}">{{deletePermissionLabel}}</label>' +
 			'</span>' +
 			'{{/if}}' +
+			'{{#each extraPermissions}}' +
+			'<span class="shareOption">' +
+			'<input id="can-{{permissionName}}-{{cid}}-{{shareWith}}" type="checkbox" name="{{permissionName}}" class="extra-permissions checkbox" data-extra-permissions="{{permissionEnabled}}"/>' +
+			'<label for="can-{{permissionName}}-{{cid}}-{{shareWith}}">{{permissionLabel}}</label>' +
+			'</span>' +
+			'{{/each}}' +
 			'</div>' +
 			'</li>' +
 			'{{/each}}' +
@@ -112,8 +118,7 @@
 		},
 
 		/**
-		 *
-		 * @param {OC.Share.Types.ShareInfo} shareInfo
+		 * @param shareIndex
 		 * @returns {object}
 		 */
 		getShareeObject: function(shareIndex) {
@@ -136,6 +141,7 @@
 				hasCreatePermission: this.model.hasCreatePermission(shareIndex),
 				hasUpdatePermission: this.model.hasUpdatePermission(shareIndex),
 				hasDeletePermission: this.model.hasDeletePermission(shareIndex),
+				extraPermissions: this.model.getShareExtraPermissions(shareIndex),
 				wasMailSent: this.model.notificationMailWasSent(shareIndex),
 				shareWith: shareWith,
 				shareWithDisplayName: shareWithDisplayName,

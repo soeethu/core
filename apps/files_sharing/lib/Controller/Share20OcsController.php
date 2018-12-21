@@ -22,6 +22,7 @@
 namespace OCA\Files_Sharing\Controller;
 
 use OC\OCS\Result;
+use OC\Share20\ExtraSharePermissions;
 use OCP\AppFramework\OCSController;
 use OCP\Files\IRootFolder;
 use OCP\Files\NotFoundException;
@@ -125,6 +126,45 @@ class Share20OcsController extends OCSController {
 		return null;
 	}
 
+//	private function createExtraPermissions($formattedShareExtraPermissions) {
+//		$shareExtraPermissions = new ExtraSharePermissions();
+//		foreach($formattedShareExtraPermissions as $permission) {
+//			if ($permission["permissionEnabled"] === true) {
+//				$shareExtraPermissions->addExtraPermission($permission["appId"], $permission["permissionName"]);
+//			}
+//		}
+//
+//		return $shareExtraPermissions;
+//	}
+
+	/**
+	 * Format extra permissions by merging \OC\Share20\Share extra permissions
+	 * with extra permissions registered with \OCP\Share\IManager
+	 *
+	 * @param IShare $share
+	 * @return array
+	 */
+	private function formatExtraPermissions(IShare $share) {
+		$formattedShareExtraPermissions = [];
+
+		if ($share instanceof \OC\Share20\Share) {
+			$registeredApps = $this->shareManager->getExtraPermissionApps();
+			foreach($registeredApps as $app) {
+				$registeredPermissions = $this->shareManager->getExtraPermissionKeys($app);
+				foreach($registeredPermissions as $permissionName) {
+					$permission["appId"] = $app;
+					$permission["permissionName"] = $permissionName;
+					$permission["permissionLabel"] = $this->shareManager->getExtraPermissionLabel($app, $permissionName);
+					$permission["permissionEnabled"] = $share->getExtraPermissions()->hasExtraPermission($app, $permissionName);
+
+					$formattedShareExtraPermissions[] = $permission;
+				}
+			}
+		}
+
+		return json_encode($formattedShareExtraPermissions);
+	}
+
 	/**
 	 * Convert an IShare to an array for OCS output
 	 *
@@ -148,7 +188,8 @@ class Share20OcsController extends OCSController {
 			'expiration' => null,
 			'token' => null,
 			'uid_file_owner' => $share->getShareOwner(),
-			'displayname_file_owner' => $shareOwner !== null ? $shareOwner->getDisplayName() : $share->getShareOwner()
+			'displayname_file_owner' => $shareOwner !== null ? $shareOwner->getDisplayName() : $share->getShareOwner(),
+			'extra_permissions' => $this->formatExtraPermissions($share)
 		];
 
 		if ($received) {

@@ -190,7 +190,8 @@ class Server {
 		$this->server->addPlugin(new CopyEtagHeaderPlugin());
 		$this->server->addPlugin(new ChunkingPlugin());
 		$this->server->addPlugin(new SecureViewPlugin(
-			\OC::$server->getLogger()
+			\OC::$server->getLogger(),
+			\OC::$server->getShareManager()
 		));
 
 		if (BrowserErrorPagePlugin::isBrowserRequest($request)) {

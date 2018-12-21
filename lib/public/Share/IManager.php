@@ -359,4 +359,13 @@ interface IManager {
 	 * @since 10.0.9
 	 */
 	public function updateShareForRecipient(IShare $share, $recipientId);
+
+
+	public function registerExtraPermission($app, $permission, $permissionLabel);
+
+	public function getExtraPermissionApps();
+
+	public function getExtraPermissionKeys($app);
+
+	public function getExtraPermissionLabel($app, $permission);
 }

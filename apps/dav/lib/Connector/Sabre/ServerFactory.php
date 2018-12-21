@@ -156,7 +156,8 @@ class ServerFactory {
 			$server->addPlugin(new \OCA\DAV\Connector\Sabre\QuotaPlugin($view));
 
 			$server->addPlugin(new SecureViewPlugin(
-				\OC::$server->getLogger()
+				\OC::$server->getLogger(),
+				\OC::$server->getShareManager()
 			));
 
 			if ($this->userSession->isLoggedIn()) {

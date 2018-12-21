@@ -146,6 +146,11 @@ class DefaultShareProvider implements IShareProvider {
 			$qb->setParameter('itemType', 'folder');
 		}
 
+		// No extra share permissions are set during share create
+		// Setting extra share permissions is only allowed at update
+		$shareExtraPermissions = new ExtraSharePermissions();
+		$qb->setValue('extra_permissions', $qb->createNamedParameter($shareExtraPermissions->serialize()));
+
 		// Set the file id
 		$qb->setValue('item_source', $qb->createNamedParameter($share->getNode()->getId()));
 		$qb->setValue('file_source', $qb->createNamedParameter($share->getNode()->getId()));
@@ -953,6 +958,10 @@ class DefaultShareProvider implements IShareProvider {
 		$shareTime = new \DateTime();
 		$shareTime->setTimestamp((int)$data['stime']);
 		$share->setShareTime($shareTime);
+
+		$shareExtraPermissions = new ExtraSharePermissions();
+		$shareExtraPermissions->load($data['extra_permissions']);
+		$share->setExtraPermissions($shareExtraPermissions);
 
 		if ($share->getShareType() === \OCP\Share::SHARE_TYPE_USER) {
 			$share->setSharedWith($data['share_with']);

@@ -22,6 +22,7 @@
 namespace OCA\DAV\DAV;
 
 use OCP\ILogger;
+use OCP\Share\IManager;
 use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\Server;
 use Sabre\DAV\ServerPlugin;
@@ -40,13 +41,17 @@ class SecureViewPlugin extends ServerPlugin {
 	/** @var \OCP\ILogger */
 	private $logger;
 
+	/** @var \OCP\IManager */
+	private $shareManager;
+
 	/**
 	 * SecureViewPlugin plugin
 	 *
 	 * @param ILogger $logger
 	 */
-	public function __construct(ILogger $logger) {
+	public function __construct(ILogger $logger, IManager $shareManager) {
 		$this->logger = $logger;
+		$this->shareManager = $shareManager;
 	}
 
 	/**
@@ -83,5 +88,9 @@ class SecureViewPlugin extends ServerPlugin {
 		$response->setHeader('Content-Length', '0');
 		$response->setStatus(204);
 		return false;
+	}
+
+	public function registerExtraPermission() {
+		$this->shareManager->registerExtraPermission('dav', 'secure-view', 'enable secure-view');
 	}
 }
