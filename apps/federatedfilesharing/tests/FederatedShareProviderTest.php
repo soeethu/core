@@ -91,13 +91,13 @@ class FederatedShareProviderTest extends \Test\TestCase {
 		$this->rootFolder = $this->createMock('OCP\Files\IRootFolder');
 		$this->config = $this->createMock('OCP\IConfig');
 		$this->userManager = $this->createMock('OCP\IUserManager');
-		//$this->addressHandler = new AddressHandler(\OC::$server->getURLGenerator(), $this->l);
 		$this->addressHandler = $this->getMockBuilder('OCA\FederatedFileSharing\AddressHandler')->disableOriginalConstructor()->getMock();
 
 		$this->userManager->expects($this->any())->method('userExists')->willReturn(true);
 
 		$this->provider = new FederatedShareProvider(
 			$this->connection,
+			\OC::$server->getEventDispatcher(),
 			$this->addressHandler,
 			$this->notifications,
 			$this->tokenHandler,
@@ -464,10 +464,11 @@ class FederatedShareProviderTest extends \Test\TestCase {
 	 *
 	 */
 	public function testUpdate($owner, $sharedBy) {
-		$this->provider = $this->getMockBuilder('OCA\FederatedFileSharing\FederatedShareProvider')
+		$this->provider = $this->getMockBuilder(FederatedShareProvider::class)
 			->setConstructorArgs(
 				[
 					$this->connection,
+					\OC::$server->getEventDispatcher(),
 					$this->addressHandler,
 					$this->notifications,
 					$this->tokenHandler,
